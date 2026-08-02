@@ -15,7 +15,7 @@
                              ищи <div class="avatar-placeholder">
                              и смотри комментарий рядом, как
                              подключить свою картинку
-  4. [ЗАМЕНИ: ВИДЕО]      — <source src="..."> внутри <video id="bgVideo">
+  4. [ЗАМЕНИ: ВИДЕО]      — <source src="..."> вну��ри <video id="bgVideo">
   5. [ЗАМЕНИ: ТРЕК]       — <source src="..."> внутри <audio id="audioEl">,
                              + название/автор/текст трека в HTML
   6. [ЗАМЕНИ: СОЦСЕТИ]    — href="#" в блоке .socials
@@ -127,7 +127,7 @@
   .grain{
     position:absolute; inset:0;
     opacity:.05; pointer-events:none;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOc[...]");
     animation: grainShift 1s steps(4) infinite;
   }
   @keyframes grainShift{
@@ -216,7 +216,8 @@
     border-radius: var(--radius-lg);
     backdrop-filter: blur(22px) saturate(140%);
     -webkit-backdrop-filter: blur(22px) saturate(140%);
-    padding: 40px 28px 30px;
+    /* увеличили верхний отступ, чтобы аватар мог нависать над карточкой, но не перекрывать контент */
+    padding: 96px 28px 40px;
     text-align:center;
     box-shadow: 0 30px 80px -20px rgba(0,0,0,.7), 0 0 0 1px rgba(255,255,255,.02) inset;
     animation: cardIn 900ms var(--ease) both;
@@ -247,21 +248,29 @@
   }
 
   /* ---- avatar ---- */
+  /* Сделаем аватар абсолютным, чтобы он красиво нависал над верхней частью карточки
+     и не перекрывал основной текст. Размер и позицию можно отрегулировать по вкусу. */
   .avatar-wrap{
-    width:112px; height:112px;
-    margin: 0 auto 20px;
-    position:relative;
+    width:170px; height:170px;
+    margin: 0; /* убираем отступы, т.к. позиционируем абсолютно */
+    position:absolute;
+    left:50%;
+    top: -85px; /* половина высоты аватара - делаем нависание */
+    transform: translateX(-50%);
+    z-index:6;
   }
   .avatar-ring{
-    position:absolute; inset:-3px;
+    position:absolute; inset:-6px;
     border-radius:50%;
     background: conic-gradient(from 0deg, #1b1830, var(--accent-b) 35%, #1b1830 75%);
     animation: spin 8s linear infinite;
+    z-index:5;
   }
   @keyframes spin{ to{ transform: rotate(360deg); } }
 
+  /* Плейсхолдер и <img> теперь занимают точно ту же область и имеют корректный object-fit */
   .avatar-placeholder, .avatar-img{
-    position:absolute; inset:4px;
+    position:absolute; inset:6px;
     border-radius:50%;
     display:flex; align-items:center; justify-content:center;
     background: linear-gradient(145deg, #201c33, #14111f);
@@ -269,12 +278,12 @@
     font-size:40px; font-weight:700;
     color: var(--text);
     overflow:hidden;
-    z-index:1;
+    z-index:6;
   }
   /* Чтобы поставить свою картинку вместо буквы:
      1) убери класс "avatar-placeholder" у div ниже (или просто спрячь его)
      2) добавь <img class="avatar-img" src="твоя-аватарка.jpg" style="object-fit:cover"> рядом */
-  .avatar-img{ display:none; object-fit:cover; }
+  .avatar-img{ display:none; object-fit:cover; width:100%; height:100%; }
 
   .avatar-wrap:hover .avatar-placeholder{
     animation: glitch 420ms steps(2) 1;
@@ -296,6 +305,7 @@
     margin: 0 0 8px;
     position:relative;
     display:inline-block;
+    z-index:2; /* ниже аватара */
   }
   .name:hover{ animation: glitchText 420ms steps(2) 1; }
   @keyframes glitchText{
@@ -459,6 +469,7 @@
     display:flex; align-items:flex-end; gap:2px;
     height:16px; flex:0 0 auto;
   }
+
   .eq span{
     width:3px; background: linear-gradient(180deg, var(--accent-b), var(--accent-a));
     border-radius:2px; height:30%;
@@ -546,9 +557,18 @@
     *{ animation-duration: .001ms !important; animation-iteration-count: 1 !important; transition-duration: .001ms !important; }
   }
 
+  /* Adaptive tweaks for smaller screens */
+  @media (max-width: 600px){
+    .card{ padding: 76px 20px 30px; }
+    .avatar-wrap{ width:120px; height:120px; top: -60px; }
+    .avatar-placeholder{ font-size:32px; }
+    .avatar-ring{ inset:-5px; }
+  }
+
   @media (max-width: 420px){
     .music-widget:hover .music-capsule{ width: 260px; }
     .music-widget.expanded .music-capsule{ width: 260px; }
+    .card{ width: 94vw; }
   }
 </style>
 </head>
@@ -584,7 +604,7 @@
       <div class="music-panel">
         <div class="music-row">
           <div class="cover-thumb cover-thumb--sq">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"></path><circle cx="6" cy="18" r="3"></circle><circle cx="18" cy="16" r="3"></circle></svg>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"></path><circle cx="6" cy="18" r=[...]</svg>
             <img class="cover-img" id="coverImgPanel" alt="">
           </div>
           <div class="eq"><span></span><span></span><span></span><span></span></div>
@@ -623,7 +643,7 @@
     <button class="mini-player" id="miniPlayer" aria-label="Play/Pause">
       <!-- [ЗАМЕНИ: ОБЛОЖКА] — вставь src картинки трека сюда и в панели плеера сверху справа -->
       <div class="cover-thumb cover-thumb--sq">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"></path><circle cx="6" cy="18" r="3"></circle><circle cx="18" cy="16" r="3"></circle></svg>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"></path><circle cx="6" cy="18" r="3">[...]</svg>
         <img class="cover-img" id="coverImgMini" alt="">
       </div>
       <div class="eq"><span></span><span></span><span></span><span></span></div>
@@ -656,19 +676,19 @@
 
       <div class="badges">
         <div class="badge">
-          <svg viewBox="0 0 24 24" fill="none" stroke="var(--accent-a)" stroke-width="2"><circle cx="11" cy="14" r="7"></circle><path d="M15 8l2-2m0 0l2 2m-2-2v-2"></path><path d="M9 13.5c.5-1 3-1 3.5 0"></path></svg>
+          <svg viewBox="0 0 24 24" fill="none" stroke="var(--accent-a)" stroke-width="2"><circle cx="11" cy="14" r="7"></circle><path d="M15 8l2-2m0 0l2 2m-2-2v-2"></path><path d="M9 13.5c.5-1 3-[...]</svg>
           <span class="tip">Долбоёб</span>
         </div>
         <div class="badge">
-          <svg viewBox="0 0 24 24" fill="var(--accent-a)" stroke="none"><path d="M12 21s-7.5-4.6-10-9.3C.4 8.1 2.3 4.5 6 4.5c2.1 0 3.6 1.1 4.5 2.6.4.7 1.1.7 1.5 0C13 5.6 14.5 4.5 16.5 4.5c3.7 0 5.6 3.6 4 7.2C19.5 16.4 12 21 12 21z"></path></svg>
+          <svg viewBox="0 0 24 24" fill="var(--accent-a)" stroke="none"><path d="M12 21s-7.5-4.6-10-9.3C.4 8.1 2.3 4.5 6 4.5c2.1 0 3.6 1.1 4.5 2.6.4.7 1.1.7 1.5 0C13 5.6 14.5 4.5 16.5 4.5c3.7 0 5[...]</svg>
           <span class="tip">Фембойчик</span>
         </div>
         <div class="badge">
-          <svg viewBox="0 0 24 24" fill="none" stroke="var(--accent-b)" stroke-width="2"><path d="M7 17a4 4 0 01-.5-7.97A5 5 0 0116 8a4 4 0 011 7.9"></path><path d="M8 20l1-2M12 21l1-2M16 20l1-2"></path></svg>
+          <svg viewBox="0 0 24 24" fill="none" stroke="var(--accent-b)" stroke-width="2"><path d="M7 17a4 4 0 01-.5-7.97A5 5 0 0116 8a4 4 0 011 7.9"></path><path d="M8 20l1-2M12 21l1-2M16 20l1-2"[...]</svg>
           <span class="tip">Душнила</span>
         </div>
         <div class="badge">
-          <svg viewBox="0 0 24 24" fill="none" stroke="#7b3dff" stroke-width="2" stroke-linecap="round"><path d="M4 4l16 16"></path><path d="M8.5 3.5l3 2.5-1.3 2.5a12 12 0 004.3 4.3l2.5-1.3 2.5 3-2 2c-1 1-3.3.7-6-1.6-2.9-2.5-4.9-5.5-5-7.4-.1-1.4.4-2.4 2-4z"></path></svg>
+          <svg viewBox="0 0 24 24" fill="none" stroke="#7b3dff" stroke-width="2" stroke-linecap="round"><path d="M4 4l16 16"></path><path d="M8.5 3.5l3 2.5-1.3 2.5a12 12 0 004.3 4.3l2.5-1.3 2.5 3[...]"/></svg>
           <span class="tip">Абонент вне зоны</span>
         </div>
       </div>
@@ -676,16 +696,16 @@
       <!-- [ЗАМЕНИ: СОЦСЕТИ] — поставь свои ссылки в href -->
       <div class="socials">
         <a class="social" href="#" aria-label="Telegram">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13"></path><path d="M22 2l-7 20-4-9-9-4z"></path></svg>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13"></path><path d="M22 2l-7 20-4-9-9-4z">[...]</svg>
         </a>
         <a class="social" href="#" aria-label="GitHub">
-          <svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M12 2C6.48 2 2 6.58 2 12.25c0 4.53 2.87 8.37 6.84 9.73.5.1.68-.22.68-.5 0-.24-.01-1.04-.01-1.88-2.78.62-3.37-1.21-3.37-1.21-.46-1.2-1.11-1.52-1.11-1.52-.91-.64.07-.62.07-.62 1 .07 1.53 1.05 1.53 1.05.89 1.57 2.34 1.11 2.91.85.09-.67.35-1.11.63-1.37-2.22-.26-4.56-1.14-4.56-5.07 0-1.12.39-2.03 1.03-2.75-.1-.26-.45-1.31.1-2.72 0 0 .84-.28 2.75 1.05a9.29 9.29 0 0 1 5 0c1.91-1.33 2.75-1.05 2.75-1.05.55 1.41.2 2.46.1 2.72.64.72 1.03 1.63 1.03 2.75 0 3.94-2.34 4.8-4.57 5.06.36.32.68.94.68 1.9 0 1.37-.01 2.47-.01 2.81 0 .28.18.61.69.5A10.26 10.26 0 0 0 22 12.25C22 6.58 17.52 2 12 2z"></path></svg>
+          <svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M12 2C6.48 2 2 6.58 2 12.25c0 4.53 2.87 8.37 6.84 9.73.5.1.68-.22.68-.5 0-.24-.01-1.04-.01-1.88-2.78.62-3.37-1.21-3.3[...]"/></svg>
         </a>
         <a class="social" href="#" aria-label="Discord">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="13" rx="4"></rect><circle cx="9" cy="12.5" r="1.2" fill="currentColor" stroke="none"></circle><circle cx="15" cy="12.5" r="1.2" fill="currentColor" stroke="none"></circle></svg>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="13" rx="4"></rect><circ[...]</svg>
         </a>
         <a class="social" href="#" aria-label="Steam">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9.5"></circle><circle cx="8.3" cy="15.2" r="1.6"></circle><circle cx="15.5" cy="9" r="2.2"></circle><path d="M9.7 14 13 11.2"></path></svg>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9.5"></circle><circle cx="8.3" cy[...]</svg>
         </a>
       </div>
     </div>
